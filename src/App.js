@@ -1,23 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import PlayingVid from "./Components/PlayingVid";
+import SearchBar from "./Components/SearchBar";
+import VideoLists from "./Components/VideoLists";
+import Youtube from './Components/Youtube'
+
 
 function App() {
+  const [videos, setVideos] = useState([])
+  const [selected, setSelected] = useState(null)
+
+
+  const selectVideo = (video) => {
+    setSelected(video)
+  }
+
+  const submit = async (keyword) => {
+    const response = await Youtube.get("/search", {
+      params: {
+        q: keyword
+      }
+    })
+    setVideos(response.data.items)
+    console.log(response.data);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container" style={{ maxWidth: 1000 }}>
+      <SearchBar submit={submit} />
+      <div className="row" style={{ padding: 10, border: "grey 1px solid", height: "" }}>
+        <PlayingVid video={selected} />
+        <VideoLists videos={videos} selectVideo={selectVideo} />
+      </div>
     </div>
   );
 }
